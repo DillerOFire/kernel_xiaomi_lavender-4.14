@@ -1675,7 +1675,8 @@ static int32_t nvt_ts_suspend(struct device *dev)
 	nvt_esd_check_enable(false);
 #endif /* #if NVT_TOUCH_ESD_PROTECT */
 
-	if (enable_gesture_mode) {
+#if WAKEUP_GESTURE
+	if(enable_gesture_mode){
 
 		buf[0] = EVENT_MAP_HOST_CMD;
 		buf[1] = 0x13;
@@ -1690,14 +1691,17 @@ static int32_t nvt_ts_suspend(struct device *dev)
 		enable_irq_wake(ts->client->irq);
 
 		NVT_LOG("Enabled touch wakeup gesture\n");
-	} else {
+	}else{
+#endif
 		disable_irq(ts->client->irq);
 
 
 		buf[0] = EVENT_MAP_HOST_CMD;
 		buf[1] = 0x11;
 		CTP_I2C_WRITE(ts->client, I2C_FW_Address, buf, 2);
+#if WAKEUP_GESTURE
 	}
+#endif
 
 	/* release all touches */
 #if MT_PROTOCOL_B
@@ -1717,9 +1721,10 @@ static int32_t nvt_ts_suspend(struct device *dev)
 	input_sync(ts->input_dev);
 
 	msleep(50);
-
-	mutex_unlock(&ts->lock);
+#if WAKEUP_GESTURE
 	suspend_state = true;
+#endif
+	mutex_unlock(&ts->lock);
 
 	NVT_LOG("end\n");
 
@@ -1753,6 +1758,7 @@ static int32_t nvt_ts_resume(struct device *dev)
 	nvt_bootloader_reset();
 	nvt_check_fw_reset_state(RESET_STATE_REK);
 
+#if WAKEUP_GESTURE
 	if (delay_gesture) {
 		enable_gesture_mode = !enable_gesture_mode;
 	}
@@ -1764,6 +1770,10 @@ static int32_t nvt_ts_resume(struct device *dev)
 	if (delay_gesture) {
 		enable_gesture_mode = !enable_gesture_mode;
 	}
+#else
+enable_irq(ts->client->irq);
+#endif
+
 
 #if NVT_TOUCH_ESD_PROTECT
 	queue_delayed_work(nvt_esd_check_wq, &nvt_esd_check_work,
@@ -1773,12 +1783,14 @@ static int32_t nvt_ts_resume(struct device *dev)
 	bTouchIsAwake = 1;
 
 	mutex_unlock(&ts->lock);
+#if WAKEUP_GESTURE
 	suspend_state = false;
 	delay_gesture = false;
 
 	if (g_nvt.usb_plugin)
 		nvt_ts_usb_plugin_work_func(NULL);
 
+#endif
 	NVT_LOG("end\n");
 
 	LOG_DONE();
