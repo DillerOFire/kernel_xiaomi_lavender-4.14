@@ -97,6 +97,9 @@
 	qcom,bcl {
 		qcom,bcl-soc-hotplug-list = <&CPU5 &CPU7>;
 	};
+	qcom,sps {
+		status = "ok";
+	};
 };
 
 &pil_modem {
