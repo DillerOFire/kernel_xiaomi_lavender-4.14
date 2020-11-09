@@ -109,3 +109,5 @@ obj-$(CONFIG_TOUCHSCREEN_ST)		+= st/
 obj-$(CONFIG_TOUCHSCREEN_HIMAX_CHIPSET)	+= hxchipset/
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_TCM)	+= synaptics_tcm/
 obj-$(CONFIG_TOUCHSCREEN_RAYDIUM_CHIPSET)  += raydium_wt030/
+obj-$(CONFIG_TOUCHSCREEN_NVT_F7A) 	+= nvt_touch_f7a/
+obj-$(CONFIG_TOUCHSCREEN_COMMON)	+= tp_common.o
