@@ -713,6 +713,10 @@ else
 KBUILD_CFLAGS   += -O2
 endif
 endif
+ifeq ($(cc-name),clang)
+KBUILD_CFLAGS	+= -mcpu=cortex-a53 -mtune=cortex-a53
+KBUILD_AFLAGS	+= -mcpu=cortex-a53 -mtune=cortex-a53
+endif
 
 KBUILD_CFLAGS += $(call cc-ifversion, -lt, 0409, \
 			$(call cc-disable-warning,maybe-uninitialized,))
