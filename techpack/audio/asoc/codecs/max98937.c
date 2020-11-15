@@ -19,6 +19,7 @@
 #include <sound/soc.h>
 #include <linux/gpio.h>
 #include <linux/of_gpio.h>
+#include <linux/miscdevice.h>
 #include <sound/tlv.h>
 #include <linux/debugfs.h>
 #include "max98937.h"
